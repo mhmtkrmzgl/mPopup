@@ -1,0 +1,9 @@
+-/**
+ - * @fileOverview jquery-mpopup, the jQuery mPopup
+ - * @author <a href="mailto:mhmtkrmzgl@gmail.com">Mehmet Kırmızıgül</a>
+ - * Facebook --> https://www.facebook.com/mhmtkrmzgl
+ - * Twitter  --> http://www.twitter.com/mhmtkrmzgl
+ - * @version 1.0
+ - * @requires jQuery
+ - * @see https://github.com/mhmtkrmzgl/mPopup
+ - */
