@@ -39,10 +39,22 @@
             cancelHeight : '15',
             cancelWidth : '15',
             wrapperOverFlow : 'auto',
-            contLoading : true,            
+            contLoading : true, 
+            keyboard : true,
+            autoLoad : false
         }, options);
         
         return this.each(function() {
+            
+            if(opts.autoLoad){
+                
+                var dataOpts = opts;
+                
+                dataOpts.ajaxData = $(this).attr("data-mAjax");
+                
+                $.mPopupLoad(dataOpts); 
+                
+            }
             
             $(this).click(function(){ 
                 
@@ -173,6 +185,30 @@
             $("." + options.wrapperClass).remove();
             $("." + options.backClass).remove();
         });
+        
+        if ( this.opts.keyboard ){
+            $.keyboard = function(event){
+                var key = event.which || event.keyCode;
+                if ( key === 27 ){ 
+                    $("." + options.wrapperClass).remove();
+                    $("." + options.backClass).remove();
+                    $(document).off('keydown', $.keyboard);
+                }
+                return false;
+            };
+            
+            $("." + options.wrapperClass).hover(function(){
+                $(document).on('keydown',  $.keyboard);
+            }, function(){
+                $(document).off('keydown', $.keyboard);
+            });
+            
+            $("." + options.backClass).hover(function(){
+                $(document).on('keydown',  $.keyboard);
+            }, function(){
+                $(document).off('keydown', $.keyboard);
+            });
+        }
         
     };
   
