@@ -13,6 +13,7 @@
     $.fn.mPopup = function(options) {
         
         var opts = $.extend({
+            popupMode : '', // ajax,direct    galery (coming soon)  
             ajaxPage : 'ajax.php',
             ajaxData : {},
             loaderGif : 'items/wait.gif',
@@ -41,36 +42,58 @@
             wrapperOverFlow : 'auto',
             contLoading : true, 
             keyboard : true,
-            autoLoad : false
+            autoLoad : false,
         }, options);
         
         return this.each(function() {
             
-            if(opts.autoLoad){
+            if(opts.popupMode === 'ajax'){
+                if(opts.autoLoad){
+
+                    var autoContent = '';
                 
-                var dataOpts = opts;
-                
-                dataOpts.ajaxData = $(this).attr("data-mAjax");
-                
-                $.mPopupLoad(dataOpts); 
-                
+                    var dataOpts = opts;
+
+                    dataOpts.ajaxData = $(this).attr("data-mAjax");
+
+                    $.mPopupLoad(dataOpts,autoContent); 
+
+                }
+
+                $(this).click(function(){ 
+
+                    var autoContent = '';
+                    
+                    var dataOpts = opts;
+
+                    dataOpts.ajaxData = $(this).attr("data-mAjax");
+
+                    $.mPopupLoad(dataOpts,autoContent); 
+                });
             }
             
-            $(this).click(function(){ 
+            else if(opts.popupMode === 'direct'){
+                if(opts.autoLoad){
+                    
+                    var autoContent = $(this).html();
+
+                    $.mPopupLoad(opts,autoContent); 
+
+                }                
+            }
+            
+            else if(opts.popupMode === 'galery'){
                 
-                var dataOpts = opts;
-                
-                dataOpts.ajaxData = $(this).attr("data-mAjax");
-                
-                $.mPopupLoad(dataOpts); 
-            });
+            }
             
         });
     };    
 
-    $.mPopupLoad = function(options){
+    $.mPopupLoad = function(options,content){
         
         this.opts = options;
+        
+        this.cont = content;
         
         this.dom = {};
         
@@ -95,7 +118,7 @@
             'overflow' : this.opts.wrapperOverFlow
         });
         
-        this.dom.$popUpHeader = $('<div><h1>'+this.opts.headerText+'</h1><a class="mPopupRemover" href="javascript:void(0)"><img src="'+this.opts.cancelPng+'" alt="cancel" /></a></div>').addClass(this.opts.headerClass).css({
+        this.dom.$popUpHeader = $('<div><h2>'+this.opts.headerText+'</h2><a class="mPopupRemover" href="javascript:void(0)"><img src="'+this.opts.cancelPng+'" alt="cancel" /></a></div>').addClass(this.opts.headerClass).css({
             'float' : 'left',
             'width' : '100%',
             'height' : this.opts.headerHeight + "px",
@@ -103,17 +126,18 @@
             'border-bottom' : this.opts.headerBottomSize+'px solid '+this.opts.headerBottomColor
         });
         
-        this.dom.$popUpHeader.find('h1').css({
+        this.dom.$popUpHeader.find('h2').css({
             'display' : 'block',
             'float' : 'left',
             'padding' : 0,
             'margin' : 0,
-            'height' : this.opts.headerHeight + "px",
-            'color' : this.opts.headerTextColor,
             'margin-left' : '10px',            
-            'line-height' : this.opts.headerHeight + "px",
-            'font':  this.opts.headerTextSize+' Verdana',
+            'color' : this.opts.headerTextColor,
+            'height' : this.opts.headerHeight + "px",
+            'font':  this.opts.headerTextSize+'px Verdana',
         });
+        
+        this.dom.$popUpHeader.find('h2').css('line-height' , this.opts.headerHeight + "px");
         
         this.dom.$popUpHeader.find('a.mPopupRemover').css({
             'display' : 'block',
@@ -149,43 +173,6 @@
             'overflow' : this.opts.wrapperOverFlow          
         });
         
-        if(this.opts.contLoading){ this.dom.$popUpContent.append(this.dom.$popUpLoader); }
-        
-        this.dom.$popUp.append(this.dom.$popUpHeader);
-        
-        this.dom.$popUp.append(this.dom.$popUpContent);
-        
-        $('body').append(this.dom.$popUpBack).append(this.dom.$popUp);
-        
-        var windowWidth = document.documentElement.clientWidth;
-        var windowHeight = document.documentElement.clientHeight;
-        var popupHeight = this.dom.$popUp.height();
-        var popupWidth = this.dom.$popUp.width();
-        
-        this.dom.$popUp.css({
-            "top": windowHeight/2-popupHeight/2,
-            "left": windowWidth/2-popupWidth/2
-        });
-        
-        $.ajax({
-            url : this.opts.ajaxPage,
-            type :"post",
-            data : JSON.parse(this.opts.ajaxData),
-            success : function(response){
-                $("." + options.contentClass).html(response);
-            }
-        });
-            
-        $("a.mPopupRemover", this.dom.$popUp).on("click",function(){
-            $("." + options.wrapperClass).remove();
-            $("." + options.backClass).remove();
-        });
-        
-        this.dom.$popUpBack.on("click",function(){
-            $("." + options.wrapperClass).remove();
-            $("." + options.backClass).remove();
-        });
-        
         if ( this.opts.keyboard ){
             $.keyboard = function(event){
                 var key = event.which || event.keyCode;
@@ -209,6 +196,52 @@
                 $(document).off('keydown', $.keyboard);
             });
         }
+        
+        if(this.opts.contLoading){ this.dom.$popUpContent.append(this.dom.$popUpLoader); }
+        
+        this.dom.$popUp.append(this.dom.$popUpHeader);
+        
+        this.dom.$popUp.append(this.dom.$popUpContent);
+        
+        $('body').append(this.dom.$popUpBack).append(this.dom.$popUp);
+        $(document).on('keydown',  $.keyboard);
+        
+        var windowWidth = document.documentElement.clientWidth;
+        var windowHeight = document.documentElement.clientHeight;
+        var popupHeight = this.dom.$popUp.height();
+        var popupWidth = this.dom.$popUp.width();
+        
+        this.dom.$popUp.css({
+            "top": windowHeight/2-popupHeight/2,
+            "left": windowWidth/2-popupWidth/2
+        });
+        
+        if(this.cont == ''){
+            $.ajax({
+                url : this.opts.ajaxPage,
+                type :"post",
+                data : JSON.parse(this.opts.ajaxData),
+                success : function(response){
+                    $("." + options.contentClass).html(response);
+                }
+            });
+        }
+        
+        else{
+            $("." + options.contentClass).html(this.cont);
+        }        
+            
+        $("a.mPopupRemover", this.dom.$popUp).on("click",function(){
+            $("." + options.wrapperClass).remove();
+            $("." + options.backClass).remove();
+            $(document).off('keydown', $.keyboard);
+        });
+        
+        this.dom.$popUpBack.on("click",function(){
+            $("." + options.wrapperClass).remove();
+            $("." + options.backClass).remove();
+            $(document).off('keydown', $.keyboard);
+        });
         
     };
   
