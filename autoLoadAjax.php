@@ -14,6 +14,9 @@
             $(".popTrigger").mPopup({
                 popupMode : 'ajax',
                 autoLoad : true,
+                cancelHeight : '25',
+                cancelWidth : '25',
+                cancelPng : 'items/cancel2.png',
                 headerText : "mPopup JQuery Plugin (AutoLoad with Ajax Content)" 
             });
             

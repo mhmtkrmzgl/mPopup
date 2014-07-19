@@ -17,6 +17,8 @@
             $(".popTrigger").mPopup({
                 popupMode : 'direct',
                 autoLoad : true,
+                headerHeight : '30',
+                headerTextSize : '16',
                 headerText : 'mPopup JQuery Plugin (AutoLoad with Direct Content)',
             });
             

@@ -20,7 +20,11 @@
             /* parameters */ 
             $(".popTrigger").mPopup({
                 popupMode : 'ajax',
-                headerText : "mPopup JQuery Plugin (Simple Ajax Content)" 
+                headerPopup : false,
+                cancelHeight : '20',
+                cancelWidth : '20',
+                mPopupBack : '#e5b534',
+                cancelPng : 'items/cancel2.png',
             });
             
         });
